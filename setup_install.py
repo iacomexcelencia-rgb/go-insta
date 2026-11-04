@@ -32,6 +32,8 @@ def main():
     (root/'.env').chmod(0o600)
     if hasattr(os,'geteuid') and os.geteuid()==0:
         for name in ['data','secrets','secrets/installation.json','secrets/auth-seed.json']:os.chown(root/name,10002,10002)
+        # Compose runs as the invoking operator; only the containers need the private directories.
+        os.chown(root/'.env',int(os.environ.get('SUDO_UID','0')),int(os.environ.get('SUDO_GID','0')))
     print('Configuração criada. VPS sem proxy existente: docker compose --profile https up -d --build')
     print('Se já existe proxy nas portas 80/443, siga docs/INSTALACAO.md antes de subir os serviços.')
     print('Depois abra '+origin+' e siga Conexão. Não publique .env, secrets/ ou data/.')
