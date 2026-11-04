@@ -1,0 +1,23 @@
+name: Check independent installation
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m unittest discover -v
+      - run: node --check go-public/app.js && node --check go-public/analytics.js && node --check go-public/onboarding.js
+      - run: sudo python3 scripts/smoke.py prepare
+      - run: docker compose config --quiet && docker compose up -d --build --wait --wait-timeout 120
+      - run: python scripts/smoke.py check
+      - if: always()
+        run: docker compose logs --tail 60 && docker compose down

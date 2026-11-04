@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+secrets/
+data/
+backups/
+*.sqlite*
+*.dpapi
+*.log
+__pycache__/
+*.pyc
+.venv/
+.coverage
+test-results/
+*.tar.gz
+*.zip
+.DS_Store

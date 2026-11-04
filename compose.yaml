@@ -1,0 +1,55 @@
+name: go-insta
+x-common: &common
+  build: .
+  image: go-insta:local
+  restart: unless-stopped
+  user: "10002:10002"
+  read_only: true
+  tmpfs: ["/tmp:size=32m,mode=1777"]
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  mem_limit: 384m
+  cpus: 0.5
+  environment: &env
+    GO_ORIGIN: ${GO_ORIGIN:?Execute setup_install.py primeiro}
+    GO_DB: /data/go.sqlite
+    GO_EVENTS: /data/events.sqlite
+    GO_SECRETS: /secrets
+  volumes: ["./data:/data", "./secrets:/secrets"]
+  logging:
+    driver: json-file
+    options: {max-size: 2m, max-file: "2"}
+services:
+  app:
+    <<: *common
+    ports: ["127.0.0.1:18766:8766"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8766/health',timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+  worker:
+    <<: *common
+    command: [python, go_worker.py]
+    volumes: ["./data:/data", "./secrets:/secrets:ro"]
+    depends_on:
+      app: {condition: service_healthy}
+  analytics:
+    <<: *common
+    command: [python, go_insights.py]
+    depends_on:
+      app: {condition: service_healthy}
+  https:
+    image: caddy:2-alpine
+    profiles: [https]
+    restart: unless-stopped
+    ports: ["80:80","443:443"]
+    environment:
+      GO_DOMAIN: ${GO_DOMAIN:?Execute setup_install.py primeiro}
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro","caddy_data:/data","caddy_config:/config"]
+    depends_on:
+      app: {condition: service_healthy}
+volumes:
+  caddy_data:
+  caddy_config:

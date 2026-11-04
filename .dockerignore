@@ -1,0 +1,15 @@
+.git
+.github
+.env*
+secrets
+data
+backups
+*.sqlite*
+*.dpapi
+*.log
+__pycache__
+.venv
+docs
+test-results
+*.tar.gz
+*.zip
