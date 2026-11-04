@@ -1,6 +1,6 @@
 # Instalar o Go Insta!
 
-**Para a live com Codex:** comece pelo [roteiro](LIVE-CODEX.md) e pelo [prompt pronto](PROMPT-CODEX.md). O aluno abre suas contas autenticadas e o Codex executa a parte técnica. Os comandos abaixo são a referência para o assistente e para quem preferir instalar manualmente.
+Este guia descreve as opções de instalação. Escolha a que corresponde à sua VPS, ao endereço HTTPS disponível e ao proxy existente.
 
 ## Hostinger: usar o endereço que você já tem
 

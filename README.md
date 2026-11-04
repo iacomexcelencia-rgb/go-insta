@@ -31,11 +31,9 @@ Cada instalador usa **seu próprio aplicativo da Meta, suas credenciais e seu se
 
 → [Instalar no servidor](docs/INSTALACAO.md) · [Configurar Meta e Instagram](docs/META.md) · [Entender os insights](docs/METRICAS.md) · [Operação e recuperação](docs/OPERACAO.md)
 
-## Construir e instalar com ajuda da IA
+## Instalação
 
-A live mostra como orientar o Codex ou Claude para construir, instalar e testar sua versão. **Hostinger e n8n não são pré-requisitos universais.** O assistente deve inspecionar sua VPS e adaptar a instalação ao ambiente existente.
-
-→ [Roteiro da live](docs/LIVE-CODEX.md) · [Prompt pronto para o aluno](docs/PROMPT-CODEX.md)
+**Hostinger e n8n não são pré-requisitos universais.** Escolha a implantação compatível com sua VPS e os serviços existentes.
 
 O requisito é um endereço HTTPS público estável para receber os eventos do Instagram. Pode ser um hostname que seu provedor já oferece; não é obrigatório comprar um domínio separado. O assistente verifica a disponibilidade e o certificado antes da instalação.
 
@@ -53,7 +51,7 @@ sudo python3 manage.py ps
 
 A descoberta procura a rota e a rede reais do Traefik, valida o HTTPS e gera apenas a configuração do Go Insta!. O n8n continua no endereço original. Use o hostname real do seu painel; não copie o número da VPS de outra pessoa.
 
-**Outra VPS, sem n8n ou com outro proxy?** Consulte [Instalação](docs/INSTALACAO.md). Há alternativas com Caddy próprio ou proxy existente. O Codex/Claude pode adaptar a implantação ao ambiente identificado. Python 3.10+, Git, Docker Engine e Compose v2 são usados pelo assistente desta distribuição; o aluno não precisa decorar esses comandos.
+**Outra VPS, sem n8n ou com outro proxy?** Consulte [Instalação](docs/INSTALACAO.md). Há alternativas com Caddy próprio ou proxy existente. O Codex/Claude pode adaptar a implantação ao ambiente identificado. O instalador desta distribuição usa Python 3.10+, Git, Docker Engine e Compose v2.
 
 ## Limites importantes desta versão
 
