@@ -1,6 +1,6 @@
 """Connect the operator's own Meta app; tokens never leave the backend."""
 import json,re,time,urllib.parse,urllib.request
-from config import read_connection,read_install,save_private,secrets_dir,account_id
+from config import read_connection,read_install,save_private,secrets_dir,account_id,base_path
 from instagram_api import Instagram,NoRedirect
 from go_store import stamp
 
@@ -8,6 +8,7 @@ FIELDS='comments,messages,messaging_postbacks'
 
 def public_status(store,origin):
     c=read_connection();install=read_install()
+    origin=origin+base_path()
     return {'connected':bool(c.get('token')),'username':c.get('username',''),'account_id':c.get('account_id',''),
             'name':c.get('name',''),'app_id':c.get('app_id',''),'connected_at':c.get('connected_at',0),
             'last_verified':c.get('last_verified',0),'last_refresh':c.get('last_refresh',0),'refresh_error':c.get('refresh_error',''),

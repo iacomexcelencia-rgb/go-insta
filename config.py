@@ -24,3 +24,8 @@ def save_private(path,value):
 
 def origin():
     return os.environ.get('GO_ORIGIN') or read_install().get('origin','')
+
+def base_path():
+    value=os.environ.get('GO_BASE',read_install().get('base_path',''))
+    if value not in ('','/go-insta'):raise ValueError('GO_BASE deve ser vazio ou /go-insta.')
+    return value

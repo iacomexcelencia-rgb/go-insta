@@ -13,3 +13,5 @@ docs
 test-results
 *.tar.gz
 *.zip
+.go-insta-mode
+compose.hostinger.json

@@ -2,7 +2,7 @@
 
 **Automações de comentários para Direct e análise do Instagram, no seu próprio servidor.**
 
-Versão **0.1.0-beta** · instalação independente · uma conta profissional por instalação · licença MIT.
+Versão **0.2.0-beta** · instalação independente · uma conta profissional por instalação · licença MIT.
 
 Cada instalador usa **seu próprio aplicativo da Meta, suas credenciais e seu servidor**. Nenhuma conta, token ou base de dados do autor acompanha o código. Não depende de Supabase nem de n8n.
 
@@ -20,7 +20,7 @@ Cada instalador usa **seu próprio aplicativo da Meta, suas credenciais e seu se
 
 ## Como a pessoa conecta o Instagram?
 
-1. Instala o Go Insta! em uma VPS Linux com domínio e HTTPS.
+1. Instala o Go Insta! em uma VPS Linux com endereço HTTPS público estável; pode usar um hostname fornecido pelo provedor.
 2. Cria seu app no Meta for Developers e configura **Instagram API with Instagram Login**.
 3. Adiciona sua conta profissional, aceita os convites e autoriza as permissões exigidas pela Meta.
 4. Gera o token no painel da Meta e informa **ID do aplicativo Instagram, chave secreta Instagram e token** na tela **Conexão** do Go Insta!.
@@ -31,25 +31,33 @@ Cada instalador usa **seu próprio aplicativo da Meta, suas credenciais e seu se
 
 → [Instalar no servidor](docs/INSTALACAO.md) · [Configurar Meta e Instagram](docs/META.md) · [Entender os insights](docs/METRICAS.md) · [Operação e recuperação](docs/OPERACAO.md)
 
-## Começar em uma VPS nova
+## Construir e instalar com ajuda da IA
 
-Pré-requisitos: Git, Python 3.13, Docker Engine e Docker Compose v2, um subdomínio apontando para a VPS e portas 80/443 disponíveis. Reserve pelo menos 2 GB de RAM para sistema, serviços e construção da imagem; é uma estimativa inicial, não um teste de capacidade.
+A live mostra como orientar o Codex ou Claude para construir, instalar e testar sua versão. **Hostinger e n8n não são pré-requisitos universais.** O assistente deve inspecionar sua VPS e adaptar a instalação ao ambiente existente.
+
+→ [Roteiro da live](docs/LIVE-CODEX.md) · [Prompt pronto para o aluno](docs/PROMPT-CODEX.md)
+
+O requisito é um endereço HTTPS público estável para receber os eventos do Instagram. Pode ser um hostname que seu provedor já oferece; não é obrigatório comprar um domínio separado. O assistente verifica a disponibilidade e o certificado antes da instalação.
+
+### Exemplo automatizado: Hostinger com Traefik/n8n existente
+
+O instalador tem um modo que reaproveita o HTTPS existente em `/go-insta/`:
 
 ```bash
 git clone https://github.com/iacomexcelencia-rgb/go-insta.git
 cd go-insta
-sudo python3 setup_install.py
-docker compose --profile https up -d --build
-docker compose ps
+sudo python3 setup_install.py --hostinger
+sudo python3 manage.py up -d --build --wait
+sudo python3 manage.py ps
 ```
 
-O instalador pede domínio, administrador, senha e contato público para privacidade. Não há senha padrão. O Caddy obtém o certificado HTTPS; abra o domínio configurado e siga **Conexão**.
+A descoberta procura a rota e a rede reais do Traefik, valida o HTTPS e gera apenas a configuração do Go Insta!. O n8n continua no endereço original. Use o hostname real do seu painel; não copie o número da VPS de outra pessoa.
 
-**Já usa n8n, Traefik, Nginx ou outro proxy nas portas 80/443?** Siga a alternativa com proxy existente em [Instalação](docs/INSTALACAO.md). Não suba um segundo proxy nas mesmas portas. Esta versão usa um subdomínio próprio, sem prefixo de caminho.
+**Outra VPS, sem n8n ou com outro proxy?** Consulte [Instalação](docs/INSTALACAO.md). Há alternativas com Caddy próprio ou proxy existente. O Codex/Claude pode adaptar a implantação ao ambiente identificado. Python 3.10+, Git, Docker Engine e Compose v2 são usados pelo assistente desta distribuição; o aluno não precisa decorar esses comandos.
 
 ## Limites importantes desta versão
 
-- O software é gratuito sob MIT; VPS, domínio e outros serviços contratados pelo instalador podem ter custos.
+- O software é gratuito sob MIT; VPS e outros serviços contratados pelo instalador podem ter custos; comprar domínio separado é opcional quando já existe um endereço adequado.
 - Funciona com conta profissional (empresa/criador), API oficial e permissões válidas. Não solicita a senha do Instagram.
 - Não envia mensagem automaticamente para novo seguidor, não força alguém a seguir, não publica conteúdo e não oferece caixa de entrada completa.
 - O botão de perfil abre o Instagram; seguir continua sendo uma decisão da pessoa.
@@ -67,7 +75,7 @@ node --check go-public/onboarding.js
 node --check go-public/analytics.js
 ```
 
-Os testes usam dados sintéticos e não enviam mensagens à Meta. O fluxo de CI também constrói a imagem e inicia uma instalação vazia em Docker, sem token. Consulte o resultado da execução do GitHub Actions; não confunda esse teste com aprovação do app ou validação real de uma nova conta Meta.
+Os testes usam dados sintéticos e não enviam mensagens à Meta. O CI constrói a imagem e verifica instalações na raiz e em `/go-insta/`, com um Traefik real e um site sintético representando o n8n. O certificado da fixture de CI é local: isso não valida emissão pública de HTTPS nem uma VPS real. Consulte o resultado da execução do GitHub Actions; não confunda esse teste com aprovação do app ou validação real de uma nova conta Meta.
 
 ## Dados e segurança
 
@@ -75,6 +83,6 @@ O repositório contém somente código, documentação e fixtures sintéticas. `
 
 O painel usa senha com hash scrypt, sessões no servidor, proteção de origem e CSRF. Webhooks exigem HMAC SHA-256. Envios de resultado incerto não são repetidos automaticamente. A instalação começa sem campanhas, e reconectar pausa as existentes.
 
-As páginas `/privacy` e `/data-deletion` são modelos preenchidos com os dados do operador. Revise-as para sua operação antes de cadastrá-las na Meta. Não publique tokens, senhas, payloads privados ou bancos em issues.
+As páginas `privacy` e `data-deletion`, dentro do endereço do painel, são modelos preenchidos com os dados do operador. Revise-as para sua operação antes de cadastrá-las na Meta. Não publique tokens, senhas, payloads privados ou bancos em issues.
 
 Projeto independente, sem afiliação à Meta ou ao Instagram. Mantido por Samuel Hipólito / ExcelêncIA. Contribuições são bem-vindas; reproduza problemas com dados fictícios.

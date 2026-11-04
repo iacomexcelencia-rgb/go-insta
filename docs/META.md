@@ -26,7 +26,7 @@ Clique em **Verificar e salvar conexão**. O painel mostra o perfil confirmado. 
 
 ## 3. Configurar os eventos
 
-Copie da tela Conexão a URL de callback e o token de verificação. Cadastre no produto Instagram da Meta, salve e habilite os campos:
+Copie da tela Conexão a URL de callback e o token de verificação. Se o painel estiver em `/go-insta/`, esse prefixo já estará nas URLs: não o remova. Por exemplo, `https://SEU-HOSTNAME/go-insta/webhooks/instagram`. Cadastre no produto Instagram da Meta, salve e habilite os campos:
 
 - `comments`
 - `messages`

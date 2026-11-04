@@ -1,0 +1,18 @@
+# Synthetic CI only. The root website stands in for n8n, not a real installation.
+name: go-insta-proxy-fixture
+services:
+  proxy:
+    image: traefik:v3
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.websecure.address=:443
+    ports: ["127.0.0.1:18443:443"]
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+  existing-site:
+    image: traefik/whoami:v1.11
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.fixture-n8n.rule: "Host(`n8n.srv123456.hstgr.cloud`)"
+      traefik.http.routers.fixture-n8n.entrypoints: websecure
+      traefik.http.routers.fixture-n8n.tls: "true"

@@ -3,18 +3,26 @@ import hashlib,hmac,html,json,os,re,sqlite3,time
 from pathlib import Path
 from contextlib import closing
 from urllib.parse import parse_qs
-from config import read_connection,read_install,account_id,origin
+from config import read_connection,read_install,account_id,origin,base_path
 from go_app import make_app
 from go_store import Store,stamp
 from go_queue import init_go_queue,queue_go_events
 
 def create_app(store,site_origin):
-    private=make_app(store,site_origin,secure=os.environ.get('GO_SECURE','1')=='1')
+    base=base_path()
+    private=make_app(store,site_origin,base=base,secure=os.environ.get('GO_SECURE','1')=='1')
     events_path=os.environ.get('GO_EVENTS','data/events.sqlite')
     Path(events_path).parent.mkdir(parents=True,exist_ok=True)
     with closing(sqlite3.connect(events_path)) as db,db:init_go_queue(db)
     def app(env,start):
         path=env.get('PATH_INFO','/');method=env.get('REQUEST_METHOD','GET')
+        if base:
+            if path==base and method in ('GET','HEAD'):
+                start('308 Permanent Redirect',[('Location',base+'/'),('Content-Length','0'),('Cache-Control','no-store')]);return [b'']
+            if not path.startswith(base+'/'):
+                start('404 Not Found',[('Content-Type','text/plain'),('Content-Length','9')]);return [b'Not Found']
+            env=dict(env,PATH_INFO=path[len(base):],SCRIPT_NAME=env.get('SCRIPT_NAME','')+base)
+            path=env['PATH_INFO']
         def reply(code,text,kind='text/plain; charset=utf-8'):
             body=text.encode();start(str(code)+' '+{200:'OK',400:'Bad Request',403:'Forbidden',405:'Method Not Allowed',413:'Payload Too Large',503:'Service Unavailable'}[code],[('Content-Type',kind),('Content-Length',str(len(body))),('Cache-Control','no-store'),('X-Content-Type-Options','nosniff'),('Referrer-Policy','no-referrer'),('Content-Security-Policy',"default-src 'none'; frame-ancestors 'none'")]);return [body]
         if path in ('/privacy','/data-deletion') and method=='GET':

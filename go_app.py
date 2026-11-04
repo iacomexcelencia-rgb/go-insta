@@ -162,8 +162,8 @@ def make_app(store,origin,base='',secure=True,api_factory=Instagram):
     return app
 
 def from_environment():
-    from config import origin
-    return make_app(Store(os.environ.get('GO_DB','data/go.sqlite')),origin(),'',os.environ.get('GO_SECURE','1')=='1')
+    from application import configured_app
+    return configured_app()
 
 if __name__=='__main__':
     from wsgiref.simple_server import make_server, WSGIRequestHandler

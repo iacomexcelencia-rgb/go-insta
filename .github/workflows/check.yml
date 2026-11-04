@@ -4,6 +4,9 @@ permissions:
   contents: read
 jobs:
   test:
+    strategy:
+      matrix:
+        install: [root, hostinger]
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -16,8 +19,13 @@ jobs:
           node-version: '22'
       - run: python -m unittest discover -v
       - run: node --check go-public/app.js && node --check go-public/analytics.js && node --check go-public/onboarding.js
-      - run: sudo python3 scripts/smoke.py prepare
-      - run: docker compose config --quiet && docker compose up -d --build --wait --wait-timeout 120
-      - run: python scripts/smoke.py check
+      - if: matrix.install == 'hostinger'
+        run: docker compose -f scripts/compose.proxy-test.yaml up -d
+      - run: sudo python3 scripts/smoke.py prepare ${{ matrix.install }}
+      - run: python manage.py config --quiet && python manage.py up -d --build --wait --wait-timeout 120
+      - run: sudo python3 scripts/smoke.py check
       - if: always()
-        run: docker compose logs --tail 60 && docker compose down
+        run: |
+          python manage.py logs --tail 60
+          python manage.py down
+          docker compose -f scripts/compose.proxy-test.yaml down

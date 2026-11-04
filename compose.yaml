@@ -12,6 +12,7 @@ x-common: &common
   cpus: 0.5
   environment: &env
     GO_ORIGIN: ${GO_ORIGIN:?Execute setup_install.py primeiro}
+    GO_BASE: ${GO_BASE:-}
     GO_DB: /data/go.sqlite
     GO_EVENTS: /data/events.sqlite
     GO_SECRETS: /secrets
@@ -22,21 +23,24 @@ x-common: &common
 services:
   app:
     <<: *common
+    labels: {traefik.enable: "false"}
     ports: ["127.0.0.1:18766:8766"]
     healthcheck:
-      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8766/health',timeout=3)"]
+      test: [CMD, python, -c, "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:8766'+os.environ.get('GO_BASE','')+'/health',timeout=3)"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
   worker:
     <<: *common
+    labels: {traefik.enable: "false"}
     command: [python, go_worker.py]
     volumes: ["./data:/data", "./secrets:/secrets:ro"]
     depends_on:
       app: {condition: service_healthy}
   analytics:
     <<: *common
+    labels: {traefik.enable: "false"}
     command: [python, go_insights.py]
     depends_on:
       app: {condition: service_healthy}
