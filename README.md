@@ -6,6 +6,8 @@ Versão **0.1.0-beta** · instalação independente · uma conta profissional po
 
 Cada instalador usa **seu próprio aplicativo da Meta, suas credenciais e seu servidor**. Nenhuma conta, token ou base de dados do autor acompanha o código. Não depende de Supabase nem de n8n.
 
+**Preciso de uma VPS ou deixar o PC ligado?** Esta distribuição foi preparada para VPS Linux. Com o sistema na VPS, seu computador pode ficar desligado: o servidor recebe os webhooks e executa automações e coletas. Rodar no PC exigiria mantê-lo ligado, com internet e um endpoint HTTPS público; essa não é a instalação de produção oferecida aqui. O GitHub distribui o código, não hospeda os serviços. Se já possui uma VPS compatível, pode usá-la sem contratar outra, cuidando dos recursos disponíveis e dos serviços existentes.
+
 ## O que você consegue fazer
 
 - Criar campanhas: comentário com palavra-chave → Direct com botão para um link.
